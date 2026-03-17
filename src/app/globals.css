@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+/* --- 1. CONFIGURATION DU THÈME (Tailwind v4) --- */
+@theme {
+  /* La nouvelle palette "Quiet Luxury" */
+  /* Un fond "Encre" profond et chaud, bien plus élégant que le noir pur OLED */
+  --color-bg: #121110;       
+  
+  /* Une surface légèrement plus claire pour détacher les éléments sans bordures dures */
+  --color-surface: #1a1918;  
+  
+  /* Un blanc cassé (off-white) pour adoucir la lecture */
+  --color-text: #EAE8E3;
+  
+  /* Un Champagne/Bronze mat, statutaire, qui remplace l'or jaune clinquant */
+  --color-accent: #C5B39B;
+  
+  /* Un gris chaud pour les textes secondaires */
+  --color-muted: #8a8886;
+  
+  /* Polices (Nous avons retiré Clash Display, trop brut) */
+  --font-sans: var(--font-texte), sans-serif;
+  --font-serif: var(--font-titre), serif; /* Assurez-vous d'avoir une belle police Serif configurée dans layout.tsx */
+  --font-body: var(--font-jost), sans-serif;
+
+  /* Nos nouvelles animations cinématographiques natives */
+  --animate-fade-in-up: fade-in-up 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  --animate-image-reveal: image-reveal 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* --- 2. LES KEYFRAMES DES ANIMATIONS --- */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes image-reveal {
+  0% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* --- 3. LES BASES HTML --- */
+@layer base {
+  html, body {
+    height: 100%;
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    /* Améliore le rendu des polices sur Mac/iOS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar élégante et minimaliste */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface) var(--color-bg);
+  }
+  
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface);
+    border-radius: 10px;
+  }
+}
+
+/* --- 4. UTILITAIRES CUSTOM (Allégés) --- */
+@layer utilities {
+  
+  /* Ligne de séparation élégante en dégradé bronze */
+  .gold-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0.6;
+  }
+
+  /* Lien de navigation avec soulignement élégant au survol */
+  .nav-link {
+    position: relative;
+    transition: color 0.4s ease;
+  }
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .nav-link:hover::before {
+    width: 100%;
+  }
+
+  /* Survol de carte adouci (On retire les ombres dorées massives) */
+  .card-hover {
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+  }
+}

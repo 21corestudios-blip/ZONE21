@@ -1,0 +1,15 @@
+cd zone-21-global
+
+Lancement serveur :
+npm run dev
+Lancement tunnel :
+Lancer Backend.command
+
+Adresses :
+http://localhost:3000
+http://localhost:3000/dashboard
+
+Sauvegarde :
+1 - git init
+2 - git add .
+3 - git commit -m "Premier commit depuis le dossier local"
