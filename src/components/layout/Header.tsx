@@ -51,7 +51,7 @@ export default function Header() {
 
             {/* 2. LE MENU GAUCHE (Desktop) */}
             <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/brands" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+              <Link href="/ecosysteme" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
                 Écosystème
               </Link>
               <Link href="/a-propos" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">

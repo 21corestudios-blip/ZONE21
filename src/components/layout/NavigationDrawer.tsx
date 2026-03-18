@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -43,7 +44,18 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
       >
         {/* En-tête du tiroir */}
         <div className="flex justify-between items-center p-6 md:p-12">
-          <span className="font-serif text-xl tracking-widest text-white">ZONE 21</span>
+          
+          {/* Le Logo cliquable qui ramène à l'accueil et ferme le menu */}
+          <Link href="/" onClick={onClose} className="hover:opacity-80 transition-opacity duration-500">
+            <Image 
+              src="/images/ui/logo-zone21-light.svg" 
+              alt="ZONE 21" 
+              width={200} 
+              height={60} 
+              className="w-auto h-4 md:h-5" // Taille légèrement adaptée pour le menu
+            />
+          </Link>
+
           <button
             onClick={onClose}
             className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
@@ -55,10 +67,10 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         {/* Liens principaux (Typographie géante) */}
         <nav className="flex flex-col gap-6 px-6 md:px-12 mt-12 overflow-y-auto">
           {[
-            { name: "La Maison", href: "/about" },
-            { name: "Écosystème", href: "/brands" },
-            { name: "Savoir-Faire", href: "/expertise" },
-            { name: "Journal", href: "/journal" },
+            { name: "Accueil", href: "/" },
+            { name: "Écosystème", href: "/ecosysteme" },
+            { name: "A propos", href: "/a-propos" },
+            { name: "Contact", href: "/contact" },
           ].map((item) => (
             <Link 
               key={item.name}
@@ -77,7 +89,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
         {/* Footer du tiroir (Liens utilitaires) */}
         <div className="mt-auto p-6 md:p-12 flex flex-col gap-6 border-t border-white/5">
           <Link href="/contact" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-500" onClick={onClose}>
-            Contact & Presse
+            Contact
           </Link>
           <Link href="/login" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/50 hover:text-white transition-colors duration-500" onClick={onClose}>
             Espace Client (Login)
