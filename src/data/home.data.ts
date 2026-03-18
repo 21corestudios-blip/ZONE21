@@ -50,9 +50,9 @@ export const homeData: HomeData = {
       alt: "Vision de la Maison Zone 21",
     },
     paragraphs: [
-      "Zone 21 ne se contente pas d'accompagner les marques ; elle les sculpte. Notre vision repose sur une fondation absolue : l'exigence des matières, la justesse du positionnement et la pérennité de l'héritage.",
-      "Plus qu'un écosystème, nous construisons des univers désirables, structurés pour traverser les époques avec une force tranquille et une autorité naturelle."
-    ]
+  "Zone 21 donne forme aux marques avec une vision fondée sur l’exigence, la précision et la durée. Chaque projet naît d’une attention profonde portée aux matières, à la justesse du positionnement et à la construction d’un héritage pensé pour s’inscrire au-delà de l’instant.",
+  "Ici, il ne s’agit pas simplement de structurer un écosystème, mais de faire émerger des univers désirables, cohérents et durables, capables de traverser le temps avec une présence calme, une force maîtrisée et une autorité naturelle."
+]
   },
   maisons: [
     {

@@ -19,7 +19,7 @@ export default function Footer() {
                 alt="ZONE 21" 
                 width={120} 
                 height={30} 
-                className="w-auto h-5 md:h-6"
+                className="w-auto h-3 md:h-4"
               />
             </Link>
             <p className="font-sans text-sm md:text-base leading-relaxed text-white/60 max-w-sm font-light">
