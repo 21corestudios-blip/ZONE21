@@ -25,9 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // Attention ici, ce sont bien des "backticks" (`) et non des guillemets simples (')
-    <html lang="fr" className={`${texteFont.variable} ${titreFont.variable} antialiased`}>
-      <body className="bg-[#121110] text-[#EAE8E3] min-h-screen flex flex-col selection:bg-[#C5B39B] selection:text-[#121110]">
+    // 1. On ajoute le bouclier sur la balise html
+    <html lang="fr" className={`${texteFont.variable} ${titreFont.variable} antialiased`} suppressHydrationWarning>
+      {/* 2. On ajoute le bouclier sur la balise body */}
+      <body 
+        className="bg-[#121110] text-[#EAE8E3] min-h-screen flex flex-col selection:bg-[#C5B39B] selection:text-[#121110]"
+        suppressHydrationWarning
+      >
         {children}
       </body>
     </html>
