@@ -6,7 +6,13 @@ import { notFound } from 'next/navigation';
 import AddToCartForm from '@/components/ui/AddToCartForm';
 import Icon from '@/components/ui/Icon';
 import ProductPrice from '@/components/ui/ProductPrice';
-import { wearProducts } from '@/data/products.data';
+import {
+  DEFAULT_REGION,
+  getRegionalInfo,
+  isProductAvailableForRegion,
+  isProductFulfillmentReady,
+  wearProducts,
+} from '@/data/products.data';
 
 type Props = {
   params: Promise<{ collection: string; productId: string }>;
@@ -66,6 +72,26 @@ export default async function ProductDetailPage({ params }: Props) {
     notFound();
   }
 
+  const fallbackRegion = DEFAULT_REGION;
+  const regionalInfo = getRegionalInfo(product, fallbackRegion);
+  const isRegionAvailable = isProductAvailableForRegion(product, fallbackRegion);
+  const isFulfillmentReady = isProductFulfillmentReady(product, fallbackRegion);
+  const isPurchasable = product.isActive && isRegionAvailable && isFulfillmentReady;
+
+  const availabilityLabel = !product.isActive
+    ? 'Indisponible'
+    : isPurchasable
+      ? 'Disponible'
+      : 'Bientôt disponible';
+
+  const availabilityMessage = !product.isActive
+    ? 'Cette pièce est actuellement retirée de la vente.'
+    : !isRegionAvailable
+      ? `Cette pièce n’est pas disponible pour la région ${fallbackRegion}.`
+      : !isFulfillmentReady
+        ? 'La configuration de production et de fulfillment est en cours de finalisation pour cette pièce.'
+        : 'Cette pièce est prête à la commande.';
+
   return (
     <main className="flex min-h-screen w-full flex-col bg-[#121110] px-6 pb-20 pt-32 md:px-12 lg:px-24">
       <nav aria-label="Breadcrumb" className="mx-auto mb-8 w-full max-w-7xl">
@@ -101,11 +127,17 @@ export default async function ProductDetailPage({ params }: Props) {
 
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-12 md:grid-cols-2 lg:gap-24">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#1a1918]">
-          {product.isNew && (
+          {product.isNew ? (
             <div className="absolute left-4 top-4 z-10 bg-[#C5B39B] px-4 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[#121110]">
               Nouveau
             </div>
-          )}
+          ) : null}
+
+          {!isPurchasable ? (
+            <div className="absolute right-4 top-4 z-10 border border-white/15 bg-black/65 px-4 py-1.5 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/80 backdrop-blur-sm">
+              Bientôt disponible
+            </div>
+          ) : null}
 
           <Image
             src={product.image}
@@ -113,12 +145,28 @@ export default async function ProductDetailPage({ params }: Props) {
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
+            className={`object-cover ${!isPurchasable ? 'opacity-85' : ''}`}
           />
         </div>
 
         <section className="flex flex-col justify-center" aria-labelledby="product-title">
           <div className="mb-8 border-b border-[#EAE8E3]/10 pb-8">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="border border-[#EAE8E3]/15 px-3 py-1 font-sans text-[0.65rem] uppercase tracking-[0.18em] text-[#EAE8E3]/55">
+                {formatCollectionLabel(product.collection)}
+              </span>
+
+              <span
+                className={`px-3 py-1 font-sans text-[0.65rem] uppercase tracking-[0.18em] ${
+                  isPurchasable
+                    ? 'border border-[#C5B39B]/30 bg-[#C5B39B]/10 text-[#C5B39B]'
+                    : 'border border-white/10 bg-white/[0.03] text-white/60'
+                }`}
+              >
+                {availabilityLabel}
+              </span>
+            </div>
+
             <h1
               id="product-title"
               className="mb-4 font-serif text-3xl leading-tight text-[#EAE8E3] md:text-5xl"
@@ -129,6 +177,28 @@ export default async function ProductDetailPage({ params }: Props) {
             <ProductPrice product={product} />
           </div>
 
+          <div className="mb-8 border border-white/10 bg-white/[0.03] p-5">
+            <p className="font-sans text-[0.65rem] uppercase tracking-[0.2em] text-white/45">
+              État produit
+            </p>
+
+            <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/75">
+              {availabilityMessage}
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-3 font-sans text-[0.65rem] uppercase tracking-[0.16em] text-white/45">
+              <span className="border border-white/10 px-3 py-1">
+                Région de référence · {fallbackRegion}
+              </span>
+              <span className="border border-white/10 px-3 py-1">
+                Devise · {regionalInfo.currency}
+              </span>
+              <span className="border border-white/10 px-3 py-1">
+                SKU · {product.sku}
+              </span>
+            </div>
+          </div>
+
           <div className="prose prose-invert mb-10">
             <p className="font-sans font-light leading-relaxed text-[#EAE8E3]/70">
               Conçu avec une exigence absolue, ce vêtement incarne la vision de Zone 21.
@@ -137,6 +207,7 @@ export default async function ProductDetailPage({ params }: Props) {
             <ul className="mt-4 space-y-2 font-sans text-sm text-[#EAE8E3]/60">
               <li>• Collection : {formatCollectionLabel(product.collection)}</li>
               <li>• Catégorie : {product.category}</li>
+              <li>• Tailles disponibles : {product.availableSizes.join(' · ')}</li>
             </ul>
           </div>
 

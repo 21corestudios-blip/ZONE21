@@ -1,7 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { Product, Region } from '@/data/products.data';
+import {
+  DEFAULT_REGION,
+  type Product,
+  type Region,
+  getRegionalInfo,
+  isProductAvailableForRegion,
+  isProductFulfillmentReady,
+  isSupportedProductSize,
+  normalizeProductSize,
+} from '@/data/products.data';
 
 export interface CartItem {
   product: Product;
@@ -21,9 +30,9 @@ interface CartState {
   getTotalPrice: () => number;
 }
 
-const DEFAULT_REGION: Region = 'EU';
 const REGION_COOKIE_NAME = 'user-region';
 const REGION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
+const MAX_QUANTITY_PER_LINE = 10;
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined';
@@ -65,6 +74,22 @@ function setRegionCookie(region: Region): void {
   document.cookie = `${REGION_COOKIE_NAME}=${region}; path=/; max-age=${REGION_COOKIE_MAX_AGE}`;
 }
 
+function canAddProductToCart(product: Product, size: string, region: Region): boolean {
+  if (!product.isActive) {
+    return false;
+  }
+
+  if (!isProductAvailableForRegion(product, region)) {
+    return false;
+  }
+
+  if (!isProductFulfillmentReady(product, region)) {
+    return false;
+  }
+
+  return isSupportedProductSize(product, size);
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -85,31 +110,60 @@ export const useCartStore = create<CartState>()(
       },
 
       addItem: (product: Product, size: string) => {
+        const region = get().region;
+        const normalizedSize = normalizeProductSize(size);
+
+        if (!normalizedSize) {
+          return;
+        }
+
+        if (!canAddProductToCart(product, normalizedSize, region)) {
+          return;
+        }
+
         set((state) => {
           const existingItemIndex = state.items.findIndex(
-            (item) => item.product.id === product.id && item.size === size,
+            (item) => item.product.id === product.id && item.size === normalizedSize,
           );
 
           if (existingItemIndex > -1) {
             const newItems = [...state.items];
+            const nextQuantity = Math.min(
+              newItems[existingItemIndex].quantity + 1,
+              MAX_QUANTITY_PER_LINE,
+            );
+
             newItems[existingItemIndex] = {
               ...newItems[existingItemIndex],
-              quantity: newItems[existingItemIndex].quantity + 1,
+              quantity: nextQuantity,
             };
 
             return { items: newItems };
           }
 
           return {
-            items: [...state.items, { product, size, quantity: 1 }],
+            items: [
+              ...state.items,
+              {
+                product,
+                size: normalizedSize,
+                quantity: 1,
+              },
+            ],
           };
         });
       },
 
       removeItem: (productId: string, size: string) => {
+        const normalizedSize = normalizeProductSize(size);
+
+        if (!normalizedSize) {
+          return;
+        }
+
         set((state) => ({
           items: state.items.filter(
-            (item) => !(item.product.id === productId && item.size === size),
+            (item) => !(item.product.id === productId && item.size === normalizedSize),
           ),
         }));
       },
@@ -124,11 +178,11 @@ export const useCartStore = create<CartState>()(
         const { items, region } = get();
 
         return items.reduce((total, item) => {
-          const regionalProductData = item.product.regions[region];
-
-          if (!regionalProductData) {
+          if (!isProductAvailableForRegion(item.product, region)) {
             return total;
           }
+
+          const regionalProductData = getRegionalInfo(item.product, region);
 
           return total + regionalProductData.price * item.quantity;
         }, 0);

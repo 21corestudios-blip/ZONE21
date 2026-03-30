@@ -1,134 +1,169 @@
-'use client';
-
 import Link from 'next/link';
 
-import { accountUser, recentOrders } from '@/data/account.data';
-
-const sidebarButtonClassName =
-  'w-full text-left p-4 font-display text-lg tracking-wider transition-colors';
+const sectionClassName = 'border border-white/10 bg-white/[0.03] p-6 md:p-8';
 
 export default function AccountPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-bg font-body text-text">
-      <header className="flex items-center justify-between border-b border-[#222] bg-surface px-6 py-6 md:px-12">
-        <Link href="/" aria-label="Retour à l’accueil Zone 21">
-          <span className="cursor-pointer font-display text-2xl tracking-widest text-accent">
-            ZONE 21
+    <main className="min-h-screen bg-black text-white">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 pb-20 pt-28 md:px-10 md:pb-28 md:pt-36">
+        <header className="flex max-w-3xl flex-col gap-5">
+          <span className="font-sans text-xs uppercase tracking-[0.3em] text-white/45">
+            Espace client
           </span>
-        </Link>
 
-        <div className="flex items-center gap-6">
-          <div className="hidden text-right md:block">
-            <p className="text-sm font-semibold text-text">{accountUser.email}</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.1em] text-muted">
-              {accountUser.customerType}
+          <div className="flex flex-col gap-4">
+            <h1 className="font-[family:var(--font-titre)] text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
+              Mon compte
+            </h1>
+
+            <p className="max-w-2xl font-sans text-sm font-light leading-relaxed text-white/70 md:text-base">
+              L’espace client Zone 21 n’est pas encore activé en production
+              publique. Cette page reste volontairement sobre afin de préparer
+              l’intégration future des commandes, factures, accès digitaux et
+              préférences utilisateur.
+            </p>
+          </div>
+        </header>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className={sectionClassName}>
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+              Statut
+            </p>
+            <p className="mt-4 font-[family:var(--font-titre)] text-2xl tracking-tight">
+              En préparation
+            </p>
+            <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/65">
+              Portail non ouvert aux utilisateurs finaux pour le moment.
             </p>
           </div>
 
-          <Link
-            href="/"
-            className="border border-[#666] px-4 py-2 text-xs uppercase tracking-[0.1em] text-[#999] transition-colors hover:border-white hover:text-white"
-          >
-            DÉCONNEXION
-          </Link>
+          <div className={sectionClassName}>
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+              Fonctions prévues
+            </p>
+            <p className="mt-4 font-[family:var(--font-titre)] text-2xl tracking-tight">
+              Commandes & accès
+            </p>
+            <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/65">
+              Historique d’achats, factures, contenus digitaux et suivi client.
+            </p>
+          </div>
+
+          <div className={sectionClassName}>
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+              Priorité technique
+            </p>
+            <p className="mt-4 font-[family:var(--font-titre)] text-2xl tracking-tight">
+              Authentification réelle
+            </p>
+            <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/65">
+              Mise en place d’un accès sécurisé avant exposition fonctionnelle.
+            </p>
+          </div>
         </div>
-      </header>
 
-      <main className="mx-auto flex-1 w-full max-w-7xl px-6 py-12">
-        <section className="mb-12" aria-labelledby="account-page-title">
-          <h1 id="account-page-title" className="mb-2 font-display text-4xl tracking-wide text-text">
-            MON COMPTE
-          </h1>
-          <p className="font-serif text-muted">Gérez vos commandes, licences et factures.</p>
-          <div className="gold-line mt-6 w-16" />
-        </section>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          <aside aria-label="Navigation de l’espace client" className="space-y-4">
-            <button
-              type="button"
-              className={`${sidebarButtonClassName} border border-accent bg-accent/5 text-accent`}
-              aria-current="page"
-            >
-              TABLEAU DE BORD
-            </button>
-
-            <button
-              type="button"
-              className={`${sidebarButtonClassName} border border-[#222] bg-surface text-muted hover:border-[#444] hover:text-text`}
-            >
-              MES COMMANDES
-            </button>
-
-            <button
-              type="button"
-              className={`${sidebarButtonClassName} border border-[#222] bg-surface text-muted hover:border-[#444] hover:text-text`}
-            >
-              MES FACTURES
-            </button>
-
-            <button
-              type="button"
-              className={`${sidebarButtonClassName} border border-[#222] bg-surface text-muted hover:border-[#444] hover:text-text`}
-            >
-              PARAMÈTRES
-            </button>
-          </aside>
-
-          <section className="space-y-8 lg:col-span-2" aria-label="Contenu principal du compte">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <article className="border border-[#222] bg-surface p-6">
-                <p className="mb-2 text-xs uppercase tracking-[0.2em] text-muted">Achats Récents</p>
-                <p className="font-display text-4xl text-text">{recentOrders.length}</p>
-              </article>
-
-              <article className="border border-[#222] bg-surface p-6">
-                <p className="mb-2 text-xs uppercase tracking-[0.2em] text-muted">Statut</p>
-                <p className="font-display text-xl text-[#4caf50]">À JOUR</p>
-              </article>
+        <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className={`${sectionClassName} flex flex-col gap-6`}>
+            <div className="flex flex-col gap-3">
+              <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                Portail à venir
+              </p>
+              <h2 className="font-[family:var(--font-titre)] text-2xl tracking-tight md:text-3xl">
+                Ce qui sera intégré ensuite
+              </h2>
             </div>
 
-            <section className="overflow-hidden border border-[#222] bg-surface">
-              <div className="flex items-center justify-between border-b border-[#222] p-6">
-                <h2 className="font-display text-2xl tracking-wide text-text">COMMANDES RÉCENTES</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="border border-white/10 p-5">
+                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                  01
+                </p>
+                <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/75">
+                  Tableau de bord client connecté à de vraies données.
+                </p>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-[#1a1a1a] text-xs uppercase tracking-[0.1em] text-muted">
-                    <tr>
-                      <th className="p-4 font-normal">Référence</th>
-                      <th className="p-4 font-normal">Date</th>
-                      <th className="p-4 font-normal">Filiale</th>
-                      <th className="p-4 font-normal">Total</th>
-                      <th className="p-4 font-normal">Statut</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {recentOrders.map((order) => (
-                      <tr
-                        key={order.id}
-                        className="border-b border-[#1a1a1a] transition-colors hover:bg-white/5"
-                      >
-                        <td className="p-4 font-medium text-accent">{order.id}</td>
-                        <td className="p-4 text-muted">{order.date}</td>
-                        <td className="p-4 text-text">{order.filial}</td>
-                        <td className="p-4 text-text">{order.total}</td>
-                        <td className="p-4">
-                          <span className="rounded bg-white/10 px-2 py-1 text-xs uppercase tracking-wider text-text">
-                            {order.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="border border-white/10 p-5">
+                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                  02
+                </p>
+                <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/75">
+                  Historique des commandes 21 Wear et produits digitaux.
+                </p>
               </div>
-            </section>
-          </section>
+
+              <div className="border border-white/10 p-5">
+                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                  03
+                </p>
+                <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/75">
+                  Factures, licences et documents téléchargeables.
+                </p>
+              </div>
+
+              <div className="border border-white/10 p-5">
+                <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                  04
+                </p>
+                <p className="mt-3 font-sans text-sm font-light leading-relaxed text-white/75">
+                  Gestion du profil, préférences et accès privilégiés.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <aside className={`${sectionClassName} flex flex-col gap-5`}>
+            <div>
+              <p className="font-sans text-xs uppercase tracking-[0.2em] text-white/45">
+                Besoin immédiat
+              </p>
+              <h2 className="mt-3 font-[family:var(--font-titre)] text-2xl tracking-tight">
+                Contact direct
+              </h2>
+            </div>
+
+            <p className="font-sans text-sm font-light leading-relaxed text-white/70">
+              Pour toute demande commerciale, projet, commande spécifique ou
+              suivi manuel, l’équipe Zone 21 reste joignable directement.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center border border-white bg-white px-4 py-3 text-xs uppercase tracking-[0.2em] text-black transition hover:opacity-90"
+              >
+                Contacter l’équipe
+              </Link>
+
+              <Link
+                href="/wear"
+                className="inline-flex items-center justify-center border border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/70 transition hover:border-white/30 hover:text-white"
+              >
+                Voir 21 Wear
+              </Link>
+
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center border border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/70 transition hover:border-white/30 hover:text-white"
+              >
+                Retour à l’accueil
+              </Link>
+            </div>
+          </aside>
+        </section>
+
+        <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 p-5">
+          <p className="font-sans text-xs uppercase tracking-[0.2em] text-amber-200/80">
+            Note de cohérence produit
+          </p>
+          <p className="mt-3 font-sans text-sm font-light leading-relaxed text-amber-50/85">
+            Cette version remplace volontairement les données simulées par une
+            page d’attente maîtrisée, afin d’éviter d’exposer un faux espace
+            client avant branchement réel de l’authentification et des données.
+          </p>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }

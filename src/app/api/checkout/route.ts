@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-import { type Region, wearProducts } from '@/data/products.data';
+import {
+  DEFAULT_REGION,
+  type Region,
+  getProductById,
+  getRegionalInfo,
+  isProductAvailableForRegion,
+  isProductFulfillmentReady,
+  isSupportedProductSize,
+  normalizeProductSize,
+} from '@/data/products.data';
 
 type CheckoutItemPayload = {
   product?: {
@@ -16,7 +25,9 @@ type CheckoutRequestBody = {
   region?: Region;
 };
 
-const DEFAULT_REGION: Region = 'EU';
+const MIN_QUANTITY = 1;
+const MAX_QUANTITY_PER_LINE = 10;
+const ALLOWED_SHIPPING_COUNTRIES = ['FR', 'BE', 'CH', 'US', 'CA', 'GB', 'DE', 'ES', 'IT'] as const;
 
 function isValidRegion(value: unknown): value is Region {
   return value === 'EU' || value === 'US';
@@ -42,6 +53,28 @@ function getStripeClient(): Stripe {
   return new Stripe(secretKey);
 }
 
+function getCheckoutErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Impossible de créer la session de paiement.';
+}
+
+function validateQuantity(quantity: unknown, productId: string): number {
+  if (typeof quantity !== 'number' || !Number.isInteger(quantity)) {
+    throw new Error(`Quantité invalide pour le produit ${productId}.`);
+  }
+
+  if (quantity < MIN_QUANTITY || quantity > MAX_QUANTITY_PER_LINE) {
+    throw new Error(
+      `La quantité du produit ${productId} doit être comprise entre ${MIN_QUANTITY} et ${MAX_QUANTITY_PER_LINE}.`,
+    );
+  }
+
+  return quantity;
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as CheckoutRequestBody;
@@ -57,32 +90,49 @@ export async function POST(request: Request) {
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => {
       const productId = item.product?.id;
-      const quantity = item.quantity;
-      const size = item.size?.trim();
 
       if (!productId) {
         throw new Error('Un produit du panier est invalide : identifiant manquant.');
       }
 
-      if (!quantity || quantity < 1 || !Number.isInteger(quantity)) {
-        throw new Error(`Quantité invalide pour le produit ${productId}.`);
+      const product = getProductById(productId);
+
+      if (!product) {
+        throw new Error(`Produit ${productId} non trouvé dans le catalogue.`);
       }
+
+      if (!product.isActive) {
+        throw new Error(`Le produit ${productId} est actuellement indisponible.`);
+      }
+
+      if (!isProductAvailableForRegion(product, region)) {
+        throw new Error(`Le produit ${productId} n’est pas disponible pour la région ${region}.`);
+      }
+
+      if (!isProductFulfillmentReady(product, region)) {
+        throw new Error(
+          `Le produit ${productId} n’est pas encore prêt pour le fulfillment en région ${region}.`,
+        );
+      }
+
+      const size = item.size?.trim();
 
       if (!size) {
         throw new Error(`Taille manquante pour le produit ${productId}.`);
       }
 
-      const product = wearProducts.find((entry) => entry.id === productId);
-
-      if (!product) {
-        throw new Error(`Produit ${productId} non trouvé dans la base.`);
+      if (!isSupportedProductSize(product, size)) {
+        throw new Error(`Taille invalide pour le produit ${productId} : ${size}.`);
       }
 
-      const regionalInfo = product.regions[region] ?? product.regions[DEFAULT_REGION];
+      const normalizedSize = normalizeProductSize(size);
 
-      if (!regionalInfo) {
-        throw new Error(`Aucune information tarifaire disponible pour ${productId}.`);
+      if (!normalizedSize) {
+        throw new Error(`Taille invalide pour le produit ${productId} : ${size}.`);
       }
+
+      const quantity = validateQuantity(item.quantity, productId);
+      const regionalInfo = getRegionalInfo(product, region);
 
       return {
         price_data: {
@@ -91,11 +141,14 @@ export async function POST(request: Request) {
             name: product.name,
             images: [`${baseUrl}${product.image}`],
             metadata: {
-              size,
-              providerId: regionalInfo.providerId,
-              provider: regionalInfo.provider,
               productId: product.id,
+              sku: product.sku,
+              size: normalizedSize,
+              provider: regionalInfo.provider,
+              providerId: regionalInfo.providerId,
               collection: product.collection,
+              category: product.category,
+              region,
             },
           },
           unit_amount: Math.round(regionalInfo.price * 100),
@@ -109,12 +162,13 @@ export async function POST(request: Request) {
       line_items,
       mode: 'payment',
       shipping_address_collection: {
-        allowed_countries: ['FR', 'BE', 'CH', 'US', 'CA', 'GB', 'DE', 'ES', 'IT'],
+        allowed_countries: [...ALLOWED_SHIPPING_COUNTRIES],
       },
       success_url: `${baseUrl}/wear/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/wear/checkout/cancel`,
       metadata: {
         order_region: region,
+        checkout_source: 'zone21-wear',
       },
     });
 
@@ -126,8 +180,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Erreur lors de la création du checkout :', error);
 
-    const message =
-      error instanceof Error ? error.message : 'Impossible de créer la session de paiement.';
+    const message = getCheckoutErrorMessage(error);
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
