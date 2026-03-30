@@ -1,77 +1,134 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { wearProducts, Region } from '@/data/products.data';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // @ts-ignore : On laisse Stripe gérer la version compatible avec votre compte
-  apiVersion: null, 
-});
+import { type Region, wearProducts } from '@/data/products.data';
+
+type CheckoutItemPayload = {
+  product?: {
+    id?: string;
+  };
+  size?: string;
+  quantity?: number;
+};
+
+type CheckoutRequestBody = {
+  items?: CheckoutItemPayload[];
+  region?: Region;
+};
+
+const DEFAULT_REGION: Region = 'EU';
+
+function isValidRegion(value: unknown): value is Region {
+  return value === 'EU' || value === 'US';
+}
+
+function getBaseUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL;
+
+  if (!baseUrl) {
+    throw new Error('NEXT_PUBLIC_SITE_URL ou NEXT_PUBLIC_URL manquante.');
+  }
+
+  return baseUrl.replace(/\/+$/, '');
+}
+
+function getStripeClient(): Stripe {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY manquante.');
+  }
+
+  return new Stripe(secretKey);
+}
 
 export async function POST(request: Request) {
-  
   try {
-    const { items, region }: { items: any[], region: Region } = await request.json();
+    const body = (await request.json()) as CheckoutRequestBody;
+    const items = body.items ?? [];
+    const region: Region = isValidRegion(body.region) ? body.region : DEFAULT_REGION;
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: "Le panier est vide" }, { status: 400 });
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Le panier est vide.' }, { status: 400 });
     }
 
-    // 1. PROTECTION : On recalcule les prix côté serveur 
-    // On ne fait jamais confiance aux prix envoyés par le navigateur (trop facile à hacker)
-    const line_items = items.map((item) => {
-      const product = wearProducts.find((p) => p.id === item.product.id);
-      
-      if (!product) {
-        throw new Error(`Produit ${item.product.id} non trouvé dans la base.`);
+    const baseUrl = getBaseUrl();
+    const stripe = getStripeClient();
+
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => {
+      const productId = item.product?.id;
+      const quantity = item.quantity;
+      const size = item.size?.trim();
+
+      if (!productId) {
+        throw new Error('Un produit du panier est invalide : identifiant manquant.');
       }
 
-      const regInfo = product.regions[region];
+      if (!quantity || quantity < 1 || !Number.isInteger(quantity)) {
+        throw new Error(`Quantité invalide pour le produit ${productId}.`);
+      }
+
+      if (!size) {
+        throw new Error(`Taille manquante pour le produit ${productId}.`);
+      }
+
+      const product = wearProducts.find((entry) => entry.id === productId);
+
+      if (!product) {
+        throw new Error(`Produit ${productId} non trouvé dans la base.`);
+      }
+
+      const regionalInfo = product.regions[region] ?? product.regions[DEFAULT_REGION];
+
+      if (!regionalInfo) {
+        throw new Error(`Aucune information tarifaire disponible pour ${productId}.`);
+      }
 
       return {
         price_data: {
-          currency: regInfo.currency.toLowerCase(),
+          currency: regionalInfo.currency.toLowerCase(),
           product_data: {
             name: product.name,
-            images: [process.env.NEXT_PUBLIC_URL + product.image],
+            images: [`${baseUrl}${product.image}`],
             metadata: {
-              size: item.size,
-              providerId: regInfo.providerId, // Utile pour Gelato plus tard
+              size,
+              providerId: regionalInfo.providerId,
+              provider: regionalInfo.provider,
+              productId: product.id,
+              collection: product.collection,
             },
           },
-          // Stripe attend des centimes (45.00€ -> 4500)
-          unit_amount: Math.round(regInfo.price * 100),
+          unit_amount: Math.round(regionalInfo.price * 100),
         },
-        quantity: item.quantity,
+        quantity,
       };
     });
 
-    // 2. CRÉATION DE LA SESSION STRIPE
     const session = await stripe.checkout.sessions.create({
-      // Ici on active CB et PayPal (assurez-vous d'avoir lié PayPal dans votre bord Stripe)
       payment_method_types: ['card', 'paypal'],
       line_items,
       mode: 'payment',
-      
-      // On demande l'adresse de livraison (obligatoire pour envoyer à Gelato)
       shipping_address_collection: {
-        allowed_countries: ['FR', 'BE', 'CH', 'US', 'CA', 'GB', 'DE', 'ES', 'IT'], 
+        allowed_countries: ['FR', 'BE', 'CH', 'US', 'CA', 'GB', 'DE', 'ES', 'IT'],
       },
-
-      // URLs de redirection après le paiement
-      success_url: `${process.env.NEXT_PUBLIC_URL}/wear/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/wear/checkout/cancel`,
-      
-      // On garde la région en mémoire pour le suivi
+      success_url: `${baseUrl}/wear/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/wear/checkout/cancel`,
       metadata: {
         order_region: region,
       },
     });
 
-    // On renvoie l'URL de la page Stripe sécurisée au frontend
-    return NextResponse.json({ url: session.url });
+    if (!session.url) {
+      throw new Error("Stripe n'a pas renvoyé d'URL de redirection.");
+    }
 
-  } catch (error: any) {
-    console.error("Erreur lors de la création du checkout:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error('Erreur lors de la création du checkout :', error);
+
+    const message =
+      error instanceof Error ? error.message : 'Impossible de créer la session de paiement.';
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

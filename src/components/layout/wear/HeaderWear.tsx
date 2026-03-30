@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import NavigationDrawer from '@/components/layout/NavigationDrawer';
+import useIsClient from '@/hooks/useIsClient';
 import { useCartStore } from '@/store/cartStore';
 
 import CartDrawer from './CartDrawer';
@@ -16,13 +17,12 @@ export default function HeaderWear() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
+  const isClient = useIsClient();
   const { items, hydrateRegionFromCookie } = useCartStore();
 
   useEffect(() => {
     hydrateRegionFromCookie();
-    setMounted(true);
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -37,7 +37,7 @@ export default function HeaderWear() {
     };
   }, [hydrateRegionFromCookie]);
 
-  const cartItemCount = mounted ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
+  const cartItemCount = isClient ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
   const openMenuDrawer = () => setIsDrawerOpen(true);
   const closeMenuDrawer = () => setIsDrawerOpen(false);
@@ -99,7 +99,7 @@ export default function HeaderWear() {
                 Panier
               </span>
 
-              {mounted && cartItemCount > 0 && (
+              {isClient && cartItemCount > 0 && (
                 <span className="rounded-full bg-[#C5B39B] px-1.5 py-0.5 text-[0.55rem] font-bold text-[#121110] transition-all">
                   {cartItemCount}
                 </span>

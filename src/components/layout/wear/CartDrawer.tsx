@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 import Icon from '@/components/ui/Icon';
 import { Region } from '@/data/products.data';
+import useIsClient from '@/hooks/useIsClient';
 import { useCartStore } from '@/store/cartStore';
 
 interface CartDrawerProps {
@@ -29,14 +30,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   } = useCartStore();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const isClient = useIsClient();
 
   useEffect(() => {
     hydrateRegionFromCookie();
-    setMounted(true);
   }, [hydrateRegionFromCookie]);
 
-  const currentRegion: Region = mounted ? region : DEFAULT_REGION;
+  const currentRegion: Region = isClient ? region : DEFAULT_REGION;
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -167,7 +167,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </span>
 
               <span className="font-serif text-2xl text-[#C5B39B]">
-                {mounted
+                {isClient
                   ? new Intl.NumberFormat('fr-FR', {
                       style: 'currency',
                       currency: getCurrencyForRegion(currentRegion),

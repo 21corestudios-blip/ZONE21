@@ -1,21 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useCartStore } from '@/store/cartStore';
+import useIsClient from '@/hooks/useIsClient';
 
 const REGIONS = ['EU', 'US'] as const;
 
 export default function RegionSelector() {
   const { region, setRegion, hydrateRegionFromCookie } = useCartStore();
-  const [mounted, setMounted] = useState(false);
+  const isClient = useIsClient();
 
   useEffect(() => {
     hydrateRegionFromCookie();
-    setMounted(true);
   }, [hydrateRegionFromCookie]);
 
-  if (!mounted) {
+  if (!isClient) {
     return null;
   }
 

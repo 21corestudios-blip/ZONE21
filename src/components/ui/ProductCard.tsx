@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { Product, Region } from '@/data/products.data';
+import useIsClient from '@/hooks/useIsClient';
 import { useCartStore } from '@/store/cartStore';
 
 interface ProductCardProps {
@@ -15,14 +16,13 @@ const DEFAULT_REGION: Region = 'EU';
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { region, hydrateRegionFromCookie } = useCartStore();
-  const [mounted, setMounted] = useState(false);
+  const isClient = useIsClient();
 
   useEffect(() => {
     hydrateRegionFromCookie();
-    setMounted(true);
   }, [hydrateRegionFromCookie]);
 
-  const currentRegion: Region = mounted ? region : DEFAULT_REGION;
+  const currentRegion: Region = isClient ? region : DEFAULT_REGION;
   const regionalInfo = product.regions[currentRegion] ?? product.regions[DEFAULT_REGION];
 
   const formattedPrice = new Intl.NumberFormat('fr-FR', {
@@ -60,7 +60,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </h3>
 
         <p className="font-serif text-lg text-[#C5B39B] transition-opacity duration-300">
-          {!mounted ? '...' : formattedPrice}
+          {!isClient ? '...' : formattedPrice}
         </p>
       </div>
     </Link>
