@@ -1,61 +1,75 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Hero from "@/components/sections/home/Hero";
-import EditorialManifesto from "@/components/sections/home/EditorialManifesto";
-import MaisonGrid from "@/components/sections/home/MaisonGrid";
+import type { Metadata } from 'next';
+import Image from 'next/image';
 
-// SEO spécifique à la page d'accueil de la holding
+import EditorialManifesto from '@/components/sections/home/EditorialManifesto';
+import Hero from '@/components/sections/home/Hero';
+import MaisonGrid from '@/components/sections/home/MaisonGrid';
+
 export const metadata: Metadata = {
-  title: "Accueil | ZONE 21",
-  description: "Découvrez Zone 21 : L'architecture créative dédiée à l'émergence des maisons de demain. Explorez 21 Wear, 21 Core Studios et 21 Production.",
+  title: 'Accueil',
+  description:
+    "Découvrez Zone 21 : l'architecture créative dédiée à l'émergence des maisons de demain. Explorez 21 Wear, 21 Core Studios et 21 Production.",
+  openGraph: {
+    title: "ZONE 21 | L'Exigence pour Signature",
+    description:
+      "Découvrez Zone 21 : l'architecture créative dédiée à l'émergence des maisons de demain. Explorez 21 Wear, 21 Core Studios et 21 Production.",
+    url: '/',
+    siteName: 'ZONE 21',
+    locale: 'fr_FR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "ZONE 21 | L'Exigence pour Signature",
+    description:
+      "Découvrez Zone 21 : l'architecture créative dédiée à l'émergence des maisons de demain. Explorez 21 Wear, 21 Core Studios et 21 Production.",
+  },
+  alternates: {
+    canonical: '/',
+  },
 };
 
 export default function HomePage() {
   return (
-    <main className="flex flex-col min-h-screen bg-[#F7F5F0] selection:bg-[#121110] selection:text-[#F7F5F0] w-full">
-      
-      {/* 1. L'image Plein Écran */}
+    <main className="flex min-h-screen w-full flex-col bg-[#F7F5F0] selection:bg-[#121110] selection:text-[#F7F5F0]">
       <section id="hero" aria-label="Introduction">
         <Hero />
       </section>
-      
-      {/* 2. La section "Le Manifeste" */}
-      <section id="manifeste" aria-label="Le Manifeste Zone 21">
+
+      <section id="manifeste" aria-label="Le manifeste Zone 21">
         <EditorialManifesto />
       </section>
 
-      {/* --- RESPIRATION VISUELLE 1 (Transition Clair -> Sombre) --- */}
-      {/* aria-hidden="true" permet aux lecteurs d'écran d'ignorer cette section décorative */}
-      <section className="relative w-full h-[50dvh] md:h-[70dvh] overflow-hidden" aria-hidden="true">
+      <section
+        className="relative h-[50dvh] w-full overflow-hidden md:h-[70dvh]"
+        aria-hidden="true"
+      >
         <Image
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
-          alt="Atmosphère Zone 21"
+          alt=""
           fill
-          priority={false}
           className="object-cover object-center"
           sizes="100vw"
         />
-        {/* Un léger voile sombre pour préparer l'œil au bloc noir qui suit */}
-        <div className="absolute inset-0 bg-[#121110]/20 mix-blend-multiply pointer-events-none"></div>
+        <div className="pointer-events-none absolute inset-0 bg-[#121110]/20 mix-blend-multiply" />
       </section>
-      
-      {/* 3. La section Écosystème (L'ancien MaisonGrid) */}
-      <section id="ecosysteme" aria-label="Nos Maisons">
+
+      <section id="ecosysteme" aria-label="Nos maisons">
         <MaisonGrid />
       </section>
 
-      {/* --- RESPIRATION VISUELLE 2 (Transition Sombre -> Footer) --- */}
-      <section className="relative w-full h-[40dvh] md:h-[60dvh] overflow-hidden bg-[#121110]" aria-hidden="true">
+      <section
+        className="relative h-[40dvh] w-full overflow-hidden bg-[#121110] md:h-[60dvh]"
+        aria-hidden="true"
+      >
         <Image
           src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
-          alt="Matière et Architecture"
+          alt=""
           fill
-          priority={false}
           className="object-cover object-center grayscale opacity-70"
           sizes="100vw"
         />
       </section>
-      
     </main>
   );
 }

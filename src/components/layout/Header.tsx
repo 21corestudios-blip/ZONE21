@@ -1,9 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import NavigationDrawer from "./NavigationDrawer";
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import NavigationDrawer from './NavigationDrawer';
+
+const desktopLinkClassName =
+  'text-[0.65rem] uppercase tracking-[0.25em] text-white/70 transition-colors duration-500 hover:text-white';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,93 +15,95 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) setIsScrolled(true);
-      else setIsScrolled(false);
+      setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
+  const openDrawer = () => setIsDrawerOpen(true);
+  const closeDrawer = () => setIsDrawerOpen(false);
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          isScrolled 
-            ? "py-4 bg-[#121110]/90 backdrop-blur-md border-b border-white/5 shadow-sm" 
-            : "py-8 bg-transparent border-transparent"
+        className={`fixed left-0 top-0 z-50 w-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          isScrolled
+            ? 'border-b border-white/5 bg-[#121110]/90 py-4 shadow-sm backdrop-blur-md'
+            : 'border-transparent bg-transparent py-8'
         }`}
       >
-        {/* MODIFICATION ICI : On utilise w-full au lieu de max-w-7xl pour un affichage bord à bord */}
-        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
-          
-          {/* GROUPE GAUCHE : Logo + Menu */}
+        <div className="flex w-full items-center justify-between px-6 lg:px-12">
           <div className="flex items-center gap-12 lg:gap-16">
-            
-            {/* 1. LE LOGO (Poussé à l'extrême gauche grâce au w-full du parent) */}
-            <Link href="/" className="flex-shrink-0 hover:opacity-80 transition-opacity duration-500">
-              {/* Le Logo en image SVG */}
-              <Image 
-                src="/images/ui/logo-zone21-light.svg" 
-                alt="ZONE 21" 
-                width={140} 
-                height={40} 
+            <Link
+              href="/"
+              aria-label="Retour à l’accueil Zone 21"
+              className="flex-shrink-0 transition-opacity duration-500 hover:opacity-80"
+            >
+              <Image
+                src="/images/ui/logo-zone21-light.svg"
+                alt="ZONE 21"
+                width={140}
+                height={40}
                 priority
-                className="w-auto h-5 md:h-6"
+                className="h-5 w-auto md:h-6"
               />
-              
-              {/* Fallback texte si pas d'image : */}
-              {/* <span className="font-serif text-2xl tracking-widest text-white">ZONE 21</span> */}
             </Link>
 
-            {/* 2. LE MENU GAUCHE (Desktop) */}
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/ecosysteme" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+            <nav className="hidden items-center gap-6 md:flex lg:gap-8" aria-label="Navigation principale">
+              <Link href="/ecosysteme" className={desktopLinkClassName}>
                 Écosystème
               </Link>
-              <Link href="/a-propos" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+              <Link href="/a-propos" className={desktopLinkClassName}>
                 À Propos
               </Link>
             </nav>
           </div>
 
-          {/* GROUPE DROIT : "Contact" + "Menu" + Hamburger */}
           <div className="flex items-center justify-end">
-            
-            {/* 3. LE MENU DROIT (Desktop) */}
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/contact" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+            <nav className="hidden items-center gap-6 md:flex lg:gap-8" aria-label="Navigation secondaire">
+              <Link href="/contact" className={desktopLinkClassName}>
                 Contact
               </Link>
-              
-              <span className="w-[1px] h-3 bg-white/20"></span>
 
-              <button 
-                onClick={() => setIsDrawerOpen(true)}
-                className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
+              <span aria-hidden="true" className="h-3 w-[1px] bg-white/20" />
+
+              <button
+                type="button"
+                onClick={openDrawer}
+                aria-label="Ouvrir le menu"
+                aria-expanded={isDrawerOpen}
+                aria-controls="navigation-drawer"
+                className={desktopLinkClassName}
               >
                 Menu
               </button>
             </nav>
 
-            {/* 4. LE MENU HAMBURGER (Mobile) */}
-            <div className="md:hidden flex">
-              <button 
-                onClick={() => setIsDrawerOpen(true)}
+            <div className="flex md:hidden">
+              <button
+                type="button"
+                onClick={openDrawer}
                 aria-label="Ouvrir le menu"
+                aria-expanded={isDrawerOpen}
+                aria-controls="navigation-drawer"
                 className="flex flex-col gap-[5px] p-2"
               >
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
+                <span className="h-[1px] w-5 bg-white transition-transform duration-500" />
+                <span className="h-[1px] w-5 bg-white transition-transform duration-500" />
               </button>
             </div>
-
           </div>
-
         </div>
       </header>
 
-      {/* Le Tiroir de navigation latéral */}
-      <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <NavigationDrawer isOpen={isDrawerOpen} onClose={closeDrawer} />
     </>
   );
 }

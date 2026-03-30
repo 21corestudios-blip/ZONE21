@@ -1,168 +1,192 @@
-"use client";
+import type { Metadata } from 'next';
+import Image from 'next/image';
 
-import Image from "next/image";
+export const metadata: Metadata = {
+  title: 'Contact',
+  description:
+    "Contactez Zone 21 pour une collaboration, une demande sur mesure ou toute question liée à l'écosystème de la maison.",
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: 'Contact | ZONE 21',
+    description:
+      "Contactez Zone 21 pour une collaboration, une demande sur mesure ou toute question liée à l'écosystème de la maison.",
+    url: '/contact',
+    siteName: 'ZONE 21',
+    locale: 'fr_FR',
+    type: 'website',
+  },
+};
+
+const inputClassName =
+  'peer block w-full border-b border-[#121110]/20 bg-transparent py-3 font-sans text-sm text-[#121110] transition-colors focus:border-[#121110] focus:outline-none';
+
+const labelClassName =
+  'absolute left-0 top-3 font-sans text-[0.65rem] uppercase tracking-[0.15em] text-[#121110]/40 transition-all duration-300 peer-focus:-top-4 peer-focus:text-[0.55rem] peer-focus:text-[#121110] peer-valid:-top-4 peer-valid:text-[0.55rem]';
 
 export default function ContactPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#F7F5F0]">
-      
-      {/* 1. HERO "CONTACT" (Fidèle à notre charte : image sombre, titre en bas) */}
-      <section className="relative w-full h-[50dvh] md:h-[60dvh] overflow-hidden bg-[#121110]">
-        
+    <main className="flex min-h-screen flex-col bg-[#F7F5F0]">
+      <section className="relative h-[50dvh] w-full overflow-hidden bg-[#121110] md:h-[60dvh]">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/contact/contact.jpg"
             alt="Bureau Zone 21"
             fill
             priority
-            className="object-cover object-[center_20%] opacity-90"
-            sizes="100vw"
             quality={100}
+            sizes="100vw"
+            className="object-cover object-[center_20%] opacity-90"
           />
         </div>
 
-        {/* Le voile dégradé pour le texte */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[#121110]/20 to-[#121110]/90 mix-blend-multiply pointer-events-none"></div>
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[#121110]/20 to-[#121110]/90 mix-blend-multiply" />
 
-        <div className="absolute bottom-10 md:bottom-16 left-0 w-full z-30 px-6 flex justify-center">
-          <h1 className="font-serif text-3xl md:text-5xl lg:text-6xl text-white font-light tracking-wide whitespace-nowrap drop-shadow-lg animate-fade-in-up">
+        <div className="absolute bottom-10 left-0 z-30 flex w-full justify-center px-6 md:bottom-16">
+          <h1 className="animate-fade-in-up whitespace-nowrap font-serif text-3xl font-light tracking-wide text-white drop-shadow-lg md:text-5xl lg:text-6xl">
             Échanger.
           </h1>
         </div>
-
       </section>
 
-      {/* 2. LE CONTENU (Informations à gauche, Formulaire à droite) */}
-      <section className="max-w-7xl mx-auto w-full px-6 md:px-12 py-24 md:py-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32">
-          
-          {/* Colonne Gauche : Les Coordonnées */}
-          <div className="flex flex-col gap-16">
+      <section className="mx-auto w-full max-w-7xl px-6 py-24 md:px-12 md:py-32">
+        <div className="grid grid-cols-1 gap-20 lg:grid-cols-2 lg:gap-32">
+          <section className="flex flex-col gap-16" aria-labelledby="contact-info-title">
             <div className="flex flex-col gap-6">
-              <h2 className="font-serif text-3xl md:text-4xl text-[#121110] leading-tight">
-                Entrer dans <br />la Zone.
+              <h2
+                id="contact-info-title"
+                className="font-serif text-3xl leading-tight text-[#121110] md:text-4xl"
+              >
+                Entrer dans <br />
+                la Zone.
               </h2>
-              <p className="font-sans text-base leading-relaxed text-[#121110]/70 font-light max-w-md">
-                Pour une collaboration, une demande de création sur mesure ou toute question concernant nos univers, Zone 21 vous invite à prendre contact. Chaque demande est considérée avec exigence, discrétion et attention, dans le prolongement naturel de notre manière de concevoir les choses.
+
+              <p className="max-w-md font-sans text-base font-light leading-relaxed text-[#121110]/70">
+                Pour une collaboration, une demande de création sur mesure ou toute question
+                concernant nos univers, Zone 21 vous invite à prendre contact. Chaque demande est
+                considérée avec exigence, discrétion et attention, dans le prolongement naturel de
+                notre manière de concevoir les choses.
               </p>
             </div>
 
             <div className="flex flex-col gap-10">
-              {/* Siège Social */}
               <div className="flex flex-col gap-2">
-                <span className="font-sans text-[0.65rem] tracking-[0.2em] text-[#121110]/40 uppercase">Siège / Studio</span>
-                <address className="font-sans text-sm md:text-base text-[#121110] not-italic leading-relaxed">
-                  ZONE 21<br />
-                  Avenue de l'Exigence<br />
+                <span className="font-sans text-[0.65rem] uppercase tracking-[0.2em] text-[#121110]/40">
+                  Siège / Studio
+                </span>
+
+                <address className="not-italic font-sans text-sm leading-relaxed text-[#121110] md:text-base">
+                  ZONE 21
+                  <br />
+                  Avenue de l&apos;Exigence
+                  <br />
                   75008 Paris, France
                 </address>
               </div>
 
-              {/* Contact Direct */}
               <div className="flex flex-col gap-2">
-                <span className="font-sans text-[0.65rem] tracking-[0.2em] text-[#121110]/40 uppercase">Contact Direct</span>
-                <a href="mailto:contact@zone21.com" className="font-sans text-sm md:text-base text-[#121110] hover:text-[#121110]/60 transition-colors duration-300">
+                <span className="font-sans text-[0.65rem] uppercase tracking-[0.2em] text-[#121110]/40">
+                  Contact Direct
+                </span>
+
+                <a
+                  href="mailto:contact@zone21.com"
+                  className="font-sans text-sm text-[#121110] transition-colors duration-300 hover:text-[#121110]/60 md:text-base"
+                >
                   contact@zone21.com
                 </a>
-                <a href="tel:+33100000000" className="font-sans text-sm md:text-base text-[#121110] hover:text-[#121110]/60 transition-colors duration-300">
+
+                <a
+                  href="tel:+33100000000"
+                  className="font-sans text-sm text-[#121110] transition-colors duration-300 hover:text-[#121110]/60 md:text-base"
+                >
                   +33 (0)1 00 00 00 00
                 </a>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Colonne Droite : Le Formulaire Épuré */}
-          <div className="flex flex-col justify-center">
-            <form className="flex flex-col gap-12" onSubmit={(e) => e.preventDefault()}>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                {/* Champ Prénom/Nom */}
-                <div className="relative group">
-                  <input 
-                    type="text" 
-                    id="name" 
-                    placeholder=" " 
-                    className="block w-full bg-transparent border-b border-[#121110]/20 py-3 font-sans text-sm text-[#121110] focus:outline-none focus:border-[#121110] transition-colors peer"
+          <section className="flex flex-col justify-center" aria-labelledby="contact-form-title">
+            <h2 id="contact-form-title" className="sr-only">
+              Formulaire de contact
+            </h2>
+
+            <form className="flex flex-col gap-12">
+              <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+                <div className="group relative">
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    placeholder=" "
                     required
+                    className={inputClassName}
                   />
-                  <label 
-                    htmlFor="name" 
-                    className="absolute left-0 top-3 font-sans text-[0.65rem] tracking-[0.15em] uppercase text-[#121110]/40 transition-all duration-300 peer-focus:-top-4 peer-focus:text-[0.55rem] peer-focus:text-[#121110] peer-valid:-top-4 peer-valid:text-[0.55rem]"
-                  >
+                  <label htmlFor="name" className={labelClassName}>
                     Nom complet
                   </label>
                 </div>
 
-                {/* Champ Email */}
-                <div className="relative group">
-                  <input 
-                    type="email" 
-                    id="email" 
-                    placeholder=" " 
-                    className="block w-full bg-transparent border-b border-[#121110]/20 py-3 font-sans text-sm text-[#121110] focus:outline-none focus:border-[#121110] transition-colors peer"
+                <div className="group relative">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder=" "
                     required
+                    className={inputClassName}
                   />
-                  <label 
-                    htmlFor="email" 
-                    className="absolute left-0 top-3 font-sans text-[0.65rem] tracking-[0.15em] uppercase text-[#121110]/40 transition-all duration-300 peer-focus:-top-4 peer-focus:text-[0.55rem] peer-focus:text-[#121110] peer-valid:-top-4 peer-valid:text-[0.55rem]"
-                  >
+                  <label htmlFor="email" className={labelClassName}>
                     Adresse email
                   </label>
                 </div>
               </div>
 
-              {/* Champ Sujet */}
-              <div className="relative group">
-                <input 
-                  type="text" 
-                  id="subject" 
-                  placeholder=" " 
-                  className="block w-full bg-transparent border-b border-[#121110]/20 py-3 font-sans text-sm text-[#121110] focus:outline-none focus:border-[#121110] transition-colors peer"
+              <div className="group relative">
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  placeholder=" "
                   required
+                  className={inputClassName}
                 />
-                <label 
-                  htmlFor="subject" 
-                  className="absolute left-0 top-3 font-sans text-[0.65rem] tracking-[0.15em] uppercase text-[#121110]/40 transition-all duration-300 peer-focus:-top-4 peer-focus:text-[0.55rem] peer-focus:text-[#121110] peer-valid:-top-4 peer-valid:text-[0.55rem]"
-                >
+                <label htmlFor="subject" className={labelClassName}>
                   Sujet de votre demande
                 </label>
               </div>
 
-              {/* Champ Message */}
-              <div className="relative group">
-                <textarea 
-                  id="message" 
+              <div className="group relative">
+                <textarea
+                  id="message"
+                  name="message"
                   rows={4}
-                  placeholder=" " 
-                  className="block w-full bg-transparent border-b border-[#121110]/20 py-3 font-sans text-sm text-[#121110] focus:outline-none focus:border-[#121110] transition-colors resize-none peer"
+                  placeholder=" "
                   required
-                ></textarea>
-                <label 
-                  htmlFor="message" 
-                  className="absolute left-0 top-3 font-sans text-[0.65rem] tracking-[0.15em] uppercase text-[#121110]/40 transition-all duration-300 peer-focus:-top-4 peer-focus:text-[0.55rem] peer-focus:text-[#121110] peer-valid:-top-4 peer-valid:text-[0.55rem]"
-                >
+                  className={`${inputClassName} resize-none`}
+                />
+                <label htmlFor="message" className={labelClassName}>
                   Votre message
                 </label>
               </div>
 
-              {/* Bouton de soumission */}
               <div className="pt-4">
-                <button 
-                  type="submit" 
-                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-[#121110] text-[#EAE8E3] overflow-hidden transition-all duration-500 hover:bg-[#2A2826]"
+                <button
+                  type="submit"
+                  className="group relative inline-flex items-center justify-center overflow-hidden bg-[#121110] px-8 py-4 text-[#EAE8E3] transition-all duration-500 hover:bg-[#2A2826]"
                 >
-                  <span className="font-sans text-[0.65rem] tracking-[0.25em] uppercase relative z-10">
+                  <span className="relative z-10 font-sans text-[0.65rem] uppercase tracking-[0.25em]">
                     Envoyer le message
                   </span>
                 </button>
               </div>
-
             </form>
-          </div>
-
+          </section>
         </div>
       </section>
-
-    </div>
+    </main>
   );
 }

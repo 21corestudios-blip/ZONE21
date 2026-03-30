@@ -1,48 +1,46 @@
-import Image from "next/image";
-import { homeData } from "@/data/home.data";
+import Image from 'next/image';
+
+import { homeData } from '@/data/home.data';
 
 export default function Hero() {
   const { imageDesktop, imageMobile, title } = homeData.hero;
 
   return (
-    // AJOUT : min-h-screen h-screen garantit que la section ne peut physiquement pas disparaître
-    <section className="relative w-full min-h-screen h-[100dvh] overflow-hidden bg-[#121110]">
-      
-      <div className="hidden md:block absolute inset-0 z-0">
+    <section className="relative h-[100dvh] min-h-screen w-full overflow-hidden bg-[#121110]">
+      <div className="absolute inset-0 z-0 hidden md:block">
         <Image
           src={imageDesktop.src}
           alt={imageDesktop.alt}
           fill
           priority
-          className="object-cover object-center animate-image-reveal"
-          sizes="100vw"
           quality={100}
+          sizes="100vw"
+          className="animate-image-reveal object-cover object-center"
         />
       </div>
 
-      <div className="block md:hidden absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 block md:hidden">
         <Image
           src={imageMobile.src}
           alt={imageMobile.alt}
           fill
           priority
-          className="object-cover object-top animate-image-reveal" 
-          sizes="100vw"
           quality={100}
+          sizes="100vw"
+          className="animate-image-reveal object-cover object-top"
         />
       </div>
 
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[#121110]/10 to-[#121110]/80 mix-blend-multiply pointer-events-none"></div>
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-transparent via-[#121110]/10 to-[#121110]/80 mix-blend-multiply" />
 
-      <div className="absolute bottom-10 md:bottom-16 left-0 w-full z-30 px-6 flex justify-center">
-        <h1 
-          className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-white font-light tracking-wide whitespace-nowrap drop-shadow-lg animate-fade-in-up" 
-          style={{ animationDelay: "400ms", animationFillMode: "both" }}
+      <div className="absolute bottom-10 left-0 z-30 flex w-full justify-center px-6 md:bottom-16">
+        <h1
+          className="animate-fade-in-up whitespace-nowrap font-serif text-2xl font-light tracking-wide text-white drop-shadow-lg sm:text-3xl md:text-5xl lg:text-6xl"
+          style={{ animationDelay: '400ms', animationFillMode: 'both' }}
         >
           {title}
         </h1>
       </div>
-
     </section>
   );
 }
