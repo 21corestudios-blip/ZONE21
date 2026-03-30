@@ -1,31 +1,46 @@
-"use client";
+'use client';
 
-import { useCartStore } from "@/store/cartStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+
+import { useCartStore } from '@/store/cartStore';
+
+const REGIONS = ['EU', 'US'] as const;
 
 export default function RegionSelector() {
-  const { region, setRegion } = useCartStore();
+  const { region, setRegion, hydrateRegionFromCookie } = useCartStore();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    hydrateRegionFromCookie();
+    setMounted(true);
+  }, [hydrateRegionFromCookie]);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="flex items-center gap-4 font-sans text-[0.6rem] tracking-[0.2em] text-[#EAE8E3]/50">
       <span>RÉGION :</span>
-      <div className="flex gap-3">
-        {(['EU', 'US', 'WORLD'] as const).map((r) => (
-          <button
-            key={r}
-            onClick={() => setRegion(r)}
-            className={`transition-colors hover:text-[#C5B39B] ${
-              region === r ? "text-[#C5B39B] font-bold underline underline-offset-4" : ""
-            }`}
-          >
-            {r}
-          </button>
-        ))}
+
+      <div className="flex gap-3" role="group" aria-label="Sélection de la région">
+        {REGIONS.map((currentRegion) => {
+          const isActive = region === currentRegion;
+
+          return (
+            <button
+              key={currentRegion}
+              type="button"
+              onClick={() => setRegion(currentRegion)}
+              aria-pressed={isActive}
+              className={`transition-colors hover:text-[#C5B39B] ${
+                isActive ? 'font-bold text-[#C5B39B] underline underline-offset-4' : ''
+              }`}
+            >
+              {currentRegion}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

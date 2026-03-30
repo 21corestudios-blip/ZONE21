@@ -2,19 +2,13 @@ cd zone-21-global
 
 Lancement serveur :
 npm run dev
-Lancement tunnel :
-Lancer Backend.command
 
 Adresses :
 http://localhost:3000
 http://localhost:3000/dashboard
 
-Sauvegarde local :
-1 - git init
-2 - git add .
-3 - git commit -m "Premier commit depuis le dossier local"
-
 Sauvegarde GIT :
+git status
 git add .
-git commit -m "modif page accueil"
+git commit -m "chore: add prettier, CI workflow and project README"
 git push
