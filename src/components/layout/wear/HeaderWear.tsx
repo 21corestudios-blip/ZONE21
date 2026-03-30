@@ -1,119 +1,143 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import NavigationDrawer from "@/components/layout/NavigationDrawer";
-import CartDrawer from "./CartDrawer"; // Import du panier
-import { useCartStore } from "@/store/cartStore";
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import NavigationDrawer from '@/components/layout/NavigationDrawer';
+import { useCartStore } from '@/store/cartStore';
+
+import CartDrawer from './CartDrawer';
+
+const collectionLinkClassName =
+  'text-[0.65rem] uppercase tracking-[0.25em] text-white/70 transition-colors duration-500 hover:text-white';
 
 export default function HeaderWear() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false); // État pour ouvrir/fermer le panier
-  
-  const { items } = useCartStore();
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const { items, hydrateRegionFromCookie } = useCartStore();
+
   useEffect(() => {
+    hydrateRegionFromCookie();
     setMounted(true);
+
     const handleScroll = () => {
-      if (window.scrollY > 50) setIsScrolled(true);
-      else setIsScrolled(false);
+      setIsScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [hydrateRegionFromCookie]);
 
   const cartItemCount = mounted ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
+
+  const openMenuDrawer = () => setIsDrawerOpen(true);
+  const closeMenuDrawer = () => setIsDrawerOpen(false);
+
+  const openCartDrawer = () => setIsCartOpen(true);
+  const closeCartDrawer = () => setIsCartOpen(false);
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          isScrolled 
-            ? "py-4 bg-[#121110]/90 backdrop-blur-md border-b border-white/5 shadow-sm" 
-            : "py-8 bg-transparent border-transparent"
+        className={`fixed left-0 top-0 z-50 w-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          isScrolled
+            ? 'border-b border-white/5 bg-[#121110]/90 py-4 shadow-sm backdrop-blur-md'
+            : 'border-transparent bg-transparent py-8'
         }`}
       >
-        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
-          
+        <div className="flex w-full items-center justify-between px-6 lg:px-12">
           <div className="flex items-center gap-12 lg:gap-16">
-            {/* LOGO */}
-            <Link href="/wear" className="flex-shrink-0 hover:opacity-80 transition-opacity duration-500">
-              <Image 
+            <Link
+              href="/wear"
+              aria-label="Retour à l’accueil 21 Wear"
+              className="flex-shrink-0 transition-opacity duration-500 hover:opacity-80"
+            >
+              <Image
                 src="/images/ui/logo_signature_or.png"
-                alt="21 WEAR" 
-                width={150} 
-                height={50} 
+                alt="21 WEAR"
+                width={150}
+                height={50}
                 priority
-                className="object-contain h-8 md:h-10 w-auto" 
+                className="h-8 w-auto object-contain md:h-10"
               />
             </Link>
 
-            {/* MENU GAUCHE : LES VRAIES COLLECTIONS ! */}
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/wear/classic" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+            <nav className="hidden items-center gap-6 md:flex lg:gap-8" aria-label="Collections 21 Wear">
+              <Link href="/wear/classic" className={collectionLinkClassName}>
                 Classic
               </Link>
-              <Link href="/wear/urban" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+              <Link href="/wear/urban" className={collectionLinkClassName}>
                 Urban
               </Link>
-              <Link href="/wear/heritage" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+              <Link href="/wear/heritage" className={collectionLinkClassName}>
                 Heritage
               </Link>
-              <Link href="/wear/studio" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+              <Link href="/wear/studio" className={collectionLinkClassName}>
                 Studio
               </Link>
             </nav>
           </div>
 
           <div className="flex items-center justify-end gap-6 lg:gap-8">
-            
-            {/* BOUTON PANIER (Ouvre le tiroir au lieu du lien 404) */}
-            <button 
-              onClick={() => setIsCartOpen(true)} 
-              className="flex items-center gap-2 group"
+            <button
+              type="button"
+              onClick={openCartDrawer}
+              aria-label="Ouvrir le panier"
+              aria-expanded={isCartOpen}
+              className="group flex items-center gap-2"
             >
-              <span className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 group-hover:text-white transition-colors duration-500">
+              <span className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 transition-colors duration-500 group-hover:text-white">
                 Panier
               </span>
+
               {mounted && cartItemCount > 0 && (
-                <span className="bg-[#C5B39B] text-[#121110] text-[0.55rem] font-bold px-1.5 py-0.5 rounded-full transition-all">
+                <span className="rounded-full bg-[#C5B39B] px-1.5 py-0.5 text-[0.55rem] font-bold text-[#121110] transition-all">
                   {cartItemCount}
                 </span>
               )}
             </button>
 
-            <span className="hidden md:block w-[1px] h-3 bg-white/20"></span>
+            <span aria-hidden="true" className="hidden h-3 w-[1px] bg-white/20 md:block" />
 
-            {/* BOUTON MENU */}
-            <button 
-              onClick={() => setIsDrawerOpen(true)}
-              className="hidden md:block text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
+            <button
+              type="button"
+              onClick={openMenuDrawer}
+              aria-label="Ouvrir le menu"
+              aria-expanded={isDrawerOpen}
+              aria-controls="navigation-drawer"
+              className="hidden text-[0.65rem] uppercase tracking-[0.25em] text-white/70 transition-colors duration-500 hover:text-white md:block"
             >
               Menu
             </button>
 
-            {/* MENU HAMBURGER */}
-            <div className="md:hidden flex">
-              <button 
-                onClick={() => setIsDrawerOpen(true)}
+            <div className="flex md:hidden">
+              <button
+                type="button"
+                onClick={openMenuDrawer}
                 aria-label="Ouvrir le menu"
+                aria-expanded={isDrawerOpen}
+                aria-controls="navigation-drawer"
                 className="flex flex-col gap-[5px] p-2"
               >
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
+                <span className="h-[1px] w-5 bg-white transition-transform duration-500" />
+                <span className="h-[1px] w-5 bg-white transition-transform duration-500" />
               </button>
             </div>
-
           </div>
         </div>
       </header>
 
-      {/* TIROIRS DE NAVIGATION ET PANIER */}
-      <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} /> 
+      <NavigationDrawer isOpen={isDrawerOpen} onClose={closeMenuDrawer} />
+      <CartDrawer isOpen={isCartOpen} onClose={closeCartDrawer} />
     </>
   );
 }

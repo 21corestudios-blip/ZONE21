@@ -1,13 +1,15 @@
-import HeaderWear from "@/components/layout/wear/HeaderWear";
-import FooterWear from "@/components/layout/wear/FooterWear";
+import FooterWear from '@/components/layout/wear/FooterWear';
+import HeaderWear from '@/components/layout/wear/HeaderWear';
 
-export default function WearLayout({ children }: { children: React.ReactNode }) {
+export default function WearLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <>
       <HeaderWear />
-      <main className="flex-grow">
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
       <FooterWear />
     </>
   );
