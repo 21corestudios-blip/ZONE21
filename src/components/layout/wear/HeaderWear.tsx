@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-// ⚠️ Attention : Si tu veux un menu mobile spécifique pour les vêtements, 
-// il faudra créer un composant NavigationDrawerWear plus tard !
-import NavigationDrawer from "@/components/layout/NavigationDrawer"; 
+import NavigationDrawer from "@/components/layout/NavigationDrawer";
+import CartDrawer from "./CartDrawer"; // Import du panier
 import { useCartStore } from "@/store/cartStore";
 
 export default function HeaderWear() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false); // État pour ouvrir/fermer le panier
   
   const { items } = useCartStore();
   const [mounted, setMounted] = useState(false);
@@ -38,10 +38,8 @@ export default function HeaderWear() {
       >
         <div className="w-full px-6 lg:px-12 flex items-center justify-between">
           
-          {/* GROUPE GAUCHE : Logo + Menu Desktop */}
           <div className="flex items-center gap-12 lg:gap-16">
-            
-            {/* 1. LE LOGO (Corrigé pour être visible) */}
+            {/* LOGO */}
             <Link href="/wear" className="flex-shrink-0 hover:opacity-80 transition-opacity duration-500">
               <Image 
                 src="/images/ui/logo_signature_or.png"
@@ -49,12 +47,11 @@ export default function HeaderWear() {
                 width={150} 
                 height={50} 
                 priority
-                // object-contain empêche l'image d'être écrasée ou coupée
-                className="object-contain h-10 md:h-12 w-auto" 
+                className="object-contain h-8 md:h-10 w-auto" 
               />
             </Link>
 
-            {/* 2. LE MENU GAUCHE (Desktop) - Liens restaurés */}
+            {/* MENU GAUCHE : LES VRAIES COLLECTIONS ! */}
             <nav className="hidden md:flex items-center gap-6 lg:gap-8">
               <Link href="/wear/classic" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
                 Classic
@@ -71,11 +68,13 @@ export default function HeaderWear() {
             </nav>
           </div>
 
-          {/* GROUPE DROIT : Panier + Menu + Hamburger */}
           <div className="flex items-center justify-end gap-6 lg:gap-8">
             
-            {/* 3. LE PANIER */}
-            <Link href="/wear/cart" className="flex items-center gap-2 group">
+            {/* BOUTON PANIER (Ouvre le tiroir au lieu du lien 404) */}
+            <button 
+              onClick={() => setIsCartOpen(true)} 
+              className="flex items-center gap-2 group"
+            >
               <span className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 group-hover:text-white transition-colors duration-500">
                 Panier
               </span>
@@ -84,11 +83,11 @@ export default function HeaderWear() {
                   {cartItemCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             <span className="hidden md:block w-[1px] h-3 bg-white/20"></span>
 
-            {/* 4. BOUTON MENU */}
+            {/* BOUTON MENU */}
             <button 
               onClick={() => setIsDrawerOpen(true)}
               className="hidden md:block text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
@@ -96,7 +95,7 @@ export default function HeaderWear() {
               Menu
             </button>
 
-            {/* 5. MENU HAMBURGER */}
+            {/* MENU HAMBURGER */}
             <div className="md:hidden flex">
               <button 
                 onClick={() => setIsDrawerOpen(true)}
@@ -112,8 +111,9 @@ export default function HeaderWear() {
         </div>
       </header>
 
-      {/* Le Tiroir de navigation latéral */}
+      {/* TIROIRS DE NAVIGATION ET PANIER */}
       <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} /> 
     </>
   );
 }
