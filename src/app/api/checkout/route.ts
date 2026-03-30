@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { wearProducts, Region } from '@/data/products.data';
 
-// On initialise Stripe avec votre clé secrète
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27' as any,
+  // @ts-ignore : On laisse Stripe gérer la version compatible avec votre compte
+  apiVersion: null, 
 });
 
 export async function POST(request: Request) {
+  
   try {
     const { items, region }: { items: any[], region: Region } = await request.json();
 
