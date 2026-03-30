@@ -1,92 +1,119 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import Icon from "@/components/ui/Icon";
+import Image from "next/image";
+// ⚠️ Attention : Si tu veux un menu mobile spécifique pour les vêtements, 
+// il faudra créer un composant NavigationDrawerWear plus tard !
+import NavigationDrawer from "@/components/layout/NavigationDrawer"; 
 import { useCartStore } from "@/store/cartStore";
-import CartDrawer from "./CartDrawer";
-import RegionSelector from "@/components/ui/RegionSelector"; // Import du sélecteur
 
 export default function HeaderWear() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const pathname = usePathname();
-  const getTotalItems = useCartStore((state) => state.getTotalItems);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  const { items } = useCartStore();
+  const [mounted, setMounted] = useState(false);
 
-  // Gestion du scroll pour l'effet de transparence
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    setMounted(true);
+    const handleScroll = () => {
+      if (window.scrollY > 50) setIsScrolled(true);
+      else setIsScrolled(false);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const cartItemCount = mounted ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-[80] transition-all duration-700 ${
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isScrolled 
-            ? "bg-[#121110]/90 backdrop-blur-md py-4 border-b border-[#EAE8E3]/5" 
-            : "bg-transparent py-8"
+            ? "py-4 bg-[#121110]/90 backdrop-blur-md border-b border-white/5 shadow-sm" 
+            : "py-8 bg-transparent border-transparent"
         }`}
       >
-        <div className="max-w-[1800px] mx-auto px-6 md:px-12 flex items-center justify-between">
+        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
           
-          {/* GAUCHE : Navigation Collections */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {['classic', 'urban', 'heritage', 'studio'].map((col) => (
-              <Link
-                key={col}
-                href={`/wear/${col}`}
-                className="text-[0.6rem] uppercase tracking-[0.25em] text-[#EAE8E3]/60 hover:text-[#C5B39B] transition-colors"
-              >
-                {col}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CENTRE : Logo */}
-          <Link href="/wear" className="absolute left-1/2 -translate-x-1/2 group">
-            <div className="flex flex-col items-center">
-              <span className="font-serif text-xl md:text-2xl tracking-[0.1em] text-[#EAE8E3]">
-                ZONE 21
-              </span>
-              <span className="text-[0.5rem] tracking-[0.5em] uppercase text-[#C5B39B] mt-1">
-                Wear
-              </span>
-            </div>
-          </Link>
-
-          {/* DROITE : Sélecteur de Région + Panier */}
-          <div className="flex items-center gap-8">
+          {/* GROUPE GAUCHE : Logo + Menu Desktop */}
+          <div className="flex items-center gap-12 lg:gap-16">
             
-            {/* --- AJOUT DU SÉLECTEUR ICI --- */}
-            <div className="hidden md:block">
-              <RegionSelector />
-            </div>
+            {/* 1. LE LOGO (Corrigé pour être visible) */}
+            <Link href="/wear" className="flex-shrink-0 hover:opacity-80 transition-opacity duration-500">
+              <Image 
+                src="/images/ui/logo_signature_or.png"
+                alt="21 WEAR" 
+                width={150} 
+                height={50} 
+                priority
+                // object-contain empêche l'image d'être écrasée ou coupée
+                className="object-contain h-10 md:h-12 w-auto" 
+              />
+            </Link>
 
-            {/* Bouton Panier */}
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 text-[#EAE8E3] hover:text-[#C5B39B] transition-colors group"
-            >
-              <Icon size={20}>
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                <path d="M3 6h18" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </Icon>
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#C5B39B] text-[#121110] text-[0.6rem] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {getTotalItems()}
+            {/* 2. LE MENU GAUCHE (Desktop) - Liens restaurés */}
+            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+              <Link href="/wear/classic" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+                Classic
+              </Link>
+              <Link href="/wear/urban" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+                Urban
+              </Link>
+              <Link href="/wear/heritage" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+                Heritage
+              </Link>
+              <Link href="/wear/studio" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
+                Studio
+              </Link>
+            </nav>
+          </div>
+
+          {/* GROUPE DROIT : Panier + Menu + Hamburger */}
+          <div className="flex items-center justify-end gap-6 lg:gap-8">
+            
+            {/* 3. LE PANIER */}
+            <Link href="/wear/cart" className="flex items-center gap-2 group">
+              <span className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 group-hover:text-white transition-colors duration-500">
+                Panier
+              </span>
+              {mounted && cartItemCount > 0 && (
+                <span className="bg-[#C5B39B] text-[#121110] text-[0.55rem] font-bold px-1.5 py-0.5 rounded-full transition-all">
+                  {cartItemCount}
                 </span>
               )}
+            </Link>
+
+            <span className="hidden md:block w-[1px] h-3 bg-white/20"></span>
+
+            {/* 4. BOUTON MENU */}
+            <button 
+              onClick={() => setIsDrawerOpen(true)}
+              className="hidden md:block text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
+            >
+              Menu
             </button>
+
+            {/* 5. MENU HAMBURGER */}
+            <div className="md:hidden flex">
+              <button 
+                onClick={() => setIsDrawerOpen(true)}
+                aria-label="Ouvrir le menu"
+                className="flex flex-col gap-[5px] p-2"
+              >
+                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
+                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
+              </button>
+            </div>
+
           </div>
         </div>
       </header>
 
-      {/* Le tiroir du panier */}
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {/* Le Tiroir de navigation latéral */}
+      <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
     </>
   );
 }
