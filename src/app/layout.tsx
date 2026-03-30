@@ -29,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${texteFont.variable} ${titreFont.variable} antialiased scroll-smooth`} suppressHydrationWarning>
+    <html lang="fr" className={`${texteFont.variable} ${titreFont.variable} antialiased`} suppressHydrationWarning>
       <body 
-        className="bg-[#121110] text-[#EAE8E3] min-h-screen flex flex-col selection:bg-[#C5B39B] selection:text-[#121110]"
+        className="font-sans bg-[#121110] text-[#EAE8E3] min-h-screen flex flex-col selection:bg-[#C5B39B] selection:text-[#121110]"
         suppressHydrationWarning
       >
         {/* Lien d'évitement pour l'accessibilité */}

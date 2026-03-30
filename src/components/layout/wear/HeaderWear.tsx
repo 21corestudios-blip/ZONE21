@@ -1,97 +1,92 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-// On remonte d'un dossier (../) pour aller chercher le tiroir du menu global
-import NavigationDrawer from "../NavigationDrawer";
+import { usePathname } from "next/navigation";
+import Icon from "@/components/ui/Icon";
+import { useCartStore } from "@/store/cartStore";
+import CartDrawer from "./CartDrawer";
+import RegionSelector from "@/components/ui/RegionSelector"; // Import du sélecteur
 
 export default function HeaderWear() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // L'état d'ouverture du menu
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const pathname = usePathname();
+  const getTotalItems = useCartStore((state) => state.getTotalItems);
 
+  // Gestion du scroll pour l'effet de transparence
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) setIsScrolled(true);
-      else setIsScrolled(false);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+        className={`fixed top-0 left-0 w-full z-[80] transition-all duration-700 ${
           isScrolled 
-            ? "py-4 bg-[#121110]/90 backdrop-blur-md border-b border-white/5 shadow-sm" 
-            : "py-8 bg-transparent border-transparent"
+            ? "bg-[#121110]/90 backdrop-blur-md py-4 border-b border-[#EAE8E3]/5" 
+            : "bg-transparent py-8"
         }`}
       >
-        <div className="w-full px-6 lg:px-12 flex items-center justify-between">
+        <div className="max-w-[1800px] mx-auto px-6 md:px-12 flex items-center justify-between">
           
-          {/* GROUPE GAUCHE : Le Logo et les Collections */}
-          <div className="flex items-center gap-12 lg:gap-16">
-            <Link href="/wear" className="flex-shrink-0 hover:opacity-80 transition-opacity duration-500">
-              <Image 
-                src="/images/ui/logo_signature_or.png" // --- LOGO 21 WEAR (À remplacer par votre propre logo si besoin) ---
-                alt="21 WEAR" 
-                width={280} // Largeur du logo (ajustez selon votre image)
-                height={80} // Hauteur du logo (ajustez selon votre image)
-                priority
-                className="w-auto h-10 md:h-12" // Classe pour ajuster la taille du logo (ajustez selon vos besoins) pour diviser par 2 = h-5 md:h-6
-              />
-            </Link>
-
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/wear/classic" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
-                Classic
-              </Link>
-              <Link href="/wear/urban" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
-                Urban
-              </Link>
-              <Link href="/wear/heritage" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
-                Heritage
-              </Link>
-              <Link href="/wear/studio" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500">
-                Studio
-              </Link>
-            </nav>
-          </div>
-
-          {/* GROUPE DROIT : Retour, Séparateur et Menu */}
-          <div className="flex items-center justify-end">
-            <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link href="/" className="text-[0.65rem] uppercase tracking-[0.25em] text-white/40 hover:text-white transition-colors duration-500">
-                Retour Zone 21
-              </Link>
-              <span className="w-[1px] h-3 bg-white/20"></span>
-              <button 
-                onClick={() => setIsDrawerOpen(true)}
-                className="text-[0.65rem] uppercase tracking-[0.25em] text-white/70 hover:text-white transition-colors duration-500"
+          {/* GAUCHE : Navigation Collections */}
+          <nav className="hidden lg:flex items-center gap-8">
+            {['classic', 'urban', 'heritage', 'studio'].map((col) => (
+              <Link
+                key={col}
+                href={`/wear/${col}`}
+                className="text-[0.6rem] uppercase tracking-[0.25em] text-[#EAE8E3]/60 hover:text-[#C5B39B] transition-colors"
               >
-                Menu
-              </button>
-            </nav>
+                {col}
+              </Link>
+            ))}
+          </nav>
 
-            {/* LE BOUTON HAMBURGER (Uniquement sur Mobile) */}
-            <div className="md:hidden flex">
-              <button 
-                onClick={() => setIsDrawerOpen(true)}
-                aria-label="Ouvrir le menu"
-                className="flex flex-col gap-[5px] p-2"
-              >
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
-                <span className="w-5 h-[1px] bg-white transition-transform duration-500"></span>
-              </button>
+          {/* CENTRE : Logo */}
+          <Link href="/wear" className="absolute left-1/2 -translate-x-1/2 group">
+            <div className="flex flex-col items-center">
+              <span className="font-serif text-xl md:text-2xl tracking-[0.1em] text-[#EAE8E3]">
+                ZONE 21
+              </span>
+              <span className="text-[0.5rem] tracking-[0.5em] uppercase text-[#C5B39B] mt-1">
+                Wear
+              </span>
             </div>
-          </div>
+          </Link>
 
+          {/* DROITE : Sélecteur de Région + Panier */}
+          <div className="flex items-center gap-8">
+            
+            {/* --- AJOUT DU SÉLECTEUR ICI --- */}
+            <div className="hidden md:block">
+              <RegionSelector />
+            </div>
+
+            {/* Bouton Panier */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-2 text-[#EAE8E3] hover:text-[#C5B39B] transition-colors group"
+            >
+              <Icon size={20}>
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </Icon>
+              {getTotalItems() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#C5B39B] text-[#121110] text-[0.6rem] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {getTotalItems()}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* LE TIROIR DE NAVIGATION (Qui s'ouvre au clic) */}
-      <NavigationDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      {/* Le tiroir du panier */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 }

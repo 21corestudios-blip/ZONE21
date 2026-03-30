@@ -8,25 +8,25 @@ export const wearData = {
       id: "classic",
       name: "Classic Collection",
       image: "/images/brands/21-wear/01_classic_collection.jpg",
-      href: "/wear/classic"
+      href: "/wear/classic" // On pointe bien vers le Lookbook
     },
     {
       id: "urban",
       name: "Urban Collection",
       image: "/images/brands/21-wear/02_urban_collection.jpg",
-      href: "/wear/urban"
+      href: "/wear/urban" // On pointe bien vers le Lookbook
     },
     {
       id: "heritage",
       name: "Heritage Collection",
       image: "/images/brands/21-wear/03_heritage_collection.jpg",
-      href: "/wear/heritage"
+      href: "/wear/heritage" // On pointe bien vers le Lookbook
     },
     {
       id: "studio",
       name: "Studio Collection By Elena",
       image: "/images/brands/21-wear/03_studio_collection.jpg",
-      href: "/wear/studio"
+      href: "/wear/studio" // On pointe bien vers le Lookbook
     }
   ]
 };

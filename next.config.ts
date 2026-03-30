@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // On autorise Next.js à charger et optimiser les images externes de nos placeholders
   images: {
+    // On déclare explicitement les niveaux de qualité autorisés
+    qualities: [25, 50, 75, 100], 
     remotePatterns: [
       {
         protocol: "https",
