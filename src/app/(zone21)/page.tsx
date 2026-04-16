@@ -56,23 +56,24 @@ export default function HomePage() {
         src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
         alt=""
         backgroundClassName="bg-[#121110]"
-        imageClassName="object-cover object-center grayscale opacity-70"
+        imageClassName="object-cover object-center"
       />
 
       <SplitShowcaseSection
         eyebrow="À Propos"
         title="Les Origines."
         paragraphs={[
-          "Zone 21 est née d’une conviction profonde : les forces les plus puissantes émergent souvent dans des lieux que l’on raconte trop vite, alors qu’ils portent déjà une discipline, une intensité et une vision rares.",
+          'Zone 21 est née d’une conviction profonde : les forces les plus puissantes émergent souvent dans des lieux que l’on raconte trop vite, alors qu’ils portent déjà une discipline, une intensité et une vision rares.',
           'Pensée comme une entité tournée vers la conception, la vision et la construction d’univers durables, Zone 21 transforme ces influences premières en langage, en esthétique et en structure.',
         ]}
         imageSrc="/images/home/a_propos/photo_texte.jpg"
         imageAlt="L'exigence Zone 21"
         imagePosition="right"
         theme="light"
+        sectionClassName="bg-white"
         ctaHref="/a-propos"
         ctaLabel="Découvrir la Vision"
-        imageClassName="object-cover grayscale transition-all duration-[1400ms] hover:grayscale-0"
+        imageClassName="object-cover"
       />
 
       <ImmersiveImageSection
@@ -94,9 +95,10 @@ export default function HomePage() {
         imageAlt="Studio Zone 21"
         imagePosition="left"
         theme="light"
+        sectionClassName="bg-white"
         ctaHref="/contact"
         ctaLabel="Nous Contacter"
-        imageClassName="object-cover transition-all duration-[1400ms]"
+        imageClassName="object-cover"
       />
 
       <ImmersiveImageSection
