@@ -30,6 +30,8 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
+  const immersiveImageSectionClass = 'relative h-[100dvh] min-h-screen w-full overflow-hidden';
+
   return (
     <main className="flex min-h-screen w-full flex-col bg-[#F7F5F0] selection:bg-[#121110] selection:text-[#F7F5F0]">
       <section id="hero" aria-label="Introduction">
@@ -40,10 +42,7 @@ export default function HomePage() {
         <EditorialManifesto />
       </section>
 
-      <section
-        className="relative h-[50dvh] w-full overflow-hidden md:h-[70dvh]"
-        aria-hidden="true"
-      >
+      <section className={immersiveImageSectionClass} aria-hidden="true">
         <Image
           src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
           alt=""
@@ -58,15 +57,12 @@ export default function HomePage() {
         <MaisonGrid />
       </section>
 
-      <section
-        className="relative h-[40dvh] w-full overflow-hidden bg-[#121110] md:h-[60dvh]"
-        aria-hidden="true"
-      >
+      <section className={`${immersiveImageSectionClass} bg-[#121110]`} aria-hidden="true">
         <Image
           src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop"
           alt=""
           fill
-          className="object-cover object-center grayscale opacity-70"
+          className="object-cover object-center opacity-70 grayscale"
           sizes="100vw"
         />
       </section>
